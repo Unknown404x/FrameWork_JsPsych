@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My experiment</title>
+    <script src="image_button_response.js"></script>
+    <script src="button_to_audio_response.js"></script>
+    <script src="plugin-html-keyboard-response.js"></script>
+    <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
+    <script src="https://unpkg.com/jspsych@7.0.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.0.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-image-button-response@1.0.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.0.0"></script>
+    <script src="../packages/jspsych/dist/index.browser.js"></script>
+    <script src="../packages/plugin-image-button-response/dist/index.browser.js"></script>
+    <script src="../packages/plugin-preload/dist/index.browser.js"></script>
+    <link rel="stylesheet" href="../packages/jspsych/css/jspsych.css">
+  </head>
+  <body></body>
+  <script>
+
+    var jsPsych = initJsPsych({
+      on_finish: function() {
+        jsPsych.data.displayData();
+      }
+    });
+
+    var timeline = [];
+
+    // all images are used in standard trials that can be automatically preloaded (as well as being used in trials 
+    // that use timeline variables), so we can preload all image files with the auto_preload option
+//    timeline.push({
+//      type: jsPsychPreload,
+//      auto_preload: true
+//    });
+
+    var test_stimuli = [
+        { stimulus: "img/blue_small.png"},
+        { stimulus: "img/blue_big.png"}
+    ];
+
+    // If render_on_canvas is false, the images will be shown via an <img> rather than <canvas> element.
+    // In some browsers, the first time the images are shown, the <img> method (render_on_canvas: false) will produce a brief 
+    // blank screen (white flash) between images that are presented consecutively with no post_trial_gap between them.
+    var trial = {
+      type: 'image-button-response',
+      stimulus: jsPsych.timelineVariable('stim'),
+      trial_duration: 1000,
+      choices: ['Yes', 'No'],
+      prompt: '<p>What emotion is this person showing?</p><p>(1s duration, consecutive images with no post_trial_gap)</p>',
+      trial_duration : 8,
+      response_ends_trial : false,
+      audio : jsPsych.timelineVariable('audiooo') ,
+      trial_ends_after_audio : true,
+      stimulus_width: 400, 
+      maintain_aspect_ratio: true,
+      post_trial_gap: 0,
+      //render_on_canvas: false 
+    }
+
+    timeline.push({
+      timeline: [trial],
+      timeline_variables: [ test_stimuli , test_stimuli , test_stimuli , test_stimuli , test_stimuli 
+   //     {stim: 'img/happy_face_1.jpg'},
+   //     {stim: 'img/happy_face_2.jpg'},
+   //     {stim: 'img/happy_face_3.jpg'},
+   //     {stim: 'img/happy_face_4.jpg'}
+      ]
+    });
+
+    timeline.push({
+      type: 'image-button-response',
+      stimulus: 'img/happy_face_1.jpg',
+      choices: ['Yes', 'No'],
+      prompt: "<p>What emotion is this person showing?</p><p>(Wait for response)</p>",
+      post_trial_gap: 500
+    });
+
+    timeline.push({
+      type: jsPsychImageButtonResponse,
+      stimulus: 'image-button-response',
+      stimulus_height: 400,
+      choices: ['Yes', 'No'],
+      stimulus_duration: 1000,
+      prompt: "<p>What emotion is this person showing? (image disappears after 1s)</p>",
+      post_trial_gap: 500
+    });
+
+    timeline.push({
+      type: jsPsychImageButtonResponse,
+      stimulus: 'image-button-response',
+      stimulus_width: 600,
+      choices: ['Yes', 'No'],
+      trial_duration: 2000,
+      response_ends_trial: false,
+      prompt: "<p>What emotion is this person showing? (trial ends after 2s)</p>",
+      post_trial_gap: 500
+    });
+
+    timeline.push({
+      type: jsPsychImageButtonResponse,
+      stimulus: 'image-button-response',
+      choices: ['Yes', 'No'],
+      stimulus_width: 400,
+      maintain_aspect_ratio: false,
+      prompt: '<p>What emotion is this person showing?</p><p>(Stimulus_width set to a smaller value and maintain_aspect_ratio set to false.)</p>',
+      post_trial_gap: 500
+    });
+
+    jsPsych.run(timeline);
+
+  </script>
+</html>
